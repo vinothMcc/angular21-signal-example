@@ -43,7 +43,7 @@ jobs:
           aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }}/ \
             --delete \
             --cache-control "public, max-age=3600"
-          
+
           # Set proper cache control for HTML files (no caching)
           aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/ s3://${{ secrets.S3_BUCKET_NAME }}/ \
             --exclude "*" \
