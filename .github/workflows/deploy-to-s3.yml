@@ -27,8 +27,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Angular project
-        run: npm run build
+      - name: Build Angular project (Production)
+        run: npm run build -- --configuration production
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -39,9 +39,24 @@ jobs:
 
       - name: Deploy to S3
         run: |
+          # Sync all files
           aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }}/ \
             --delete \
             --cache-control "public, max-age=3600"
+          
+          # Set proper cache control for HTML files (no caching)
+          aws s3 cp s3://${{ secrets.S3_BUCKET_NAME }}/ s3://${{ secrets.S3_BUCKET_NAME }}/ \
+            --exclude "*" \
+            --include "*.html" \
+            --recursive \
+            --cache-control "no-cache, no-store, must-revalidate" \
+            --metadata-directive REPLACE
+
+      - name: Configure S3 static website hosting
+        run: |
+          aws s3 website s3://${{ secrets.S3_BUCKET_NAME }}/ \
+            --index-document index.html \
+            --error-document index.html
 
       - name: Invalidate CloudFront cache (optional)
         if: vars.CLOUDFRONT_DISTRIBUTION_ID != ''
