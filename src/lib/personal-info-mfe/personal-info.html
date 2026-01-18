@@ -1,0 +1,121 @@
+<div class="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-600 to-purple-700 p-4">
+  <div class="w-full max-w-md">
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Expense Update</h1>
+        <button (click)="onLogout()"
+          class="text-sm bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg transition duration-200">
+          Logout
+        </button>
+      </div>
+
+      <form [formGroup]="personalForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Category Dropdown -->
+        <div>
+          <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">
+            Category
+          </label>
+          <select id="category" formControlName="category"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            [class.border-red-500]="category?.invalid && isSubmitted()"
+            [class.bg-red-50]="category?.invalid && isSubmitted()">
+            <option value="" disabled>Select a category</option>
+            <option value="food">Food</option>
+            <option value="petrol">Petrol</option>
+          </select>
+          @if (category?.invalid && isSubmitted()) {
+          <div class="mt-2">
+            @if (category?.errors?.['required']) {
+            <p class="text-sm text-red-600">
+              Category is required
+            </p>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Date Picker -->
+        <div>
+          <label for="date" class="block text-sm font-semibold text-gray-700 mb-2">
+            Date
+          </label>
+          <input type="date" id="date" formControlName="date"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            [class.border-red-500]="date?.invalid && isSubmitted()"
+            [class.bg-red-50]="date?.invalid && isSubmitted()" />
+          @if (date?.invalid && isSubmitted()) {
+          <div class="mt-2">
+            @if (date?.errors?.['required']) {
+            <p class="text-sm text-red-600">
+              Date is required
+            </p>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Price Field -->
+        <div>
+          <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+            Price
+          </label>
+          <input type="number" id="price" formControlName="price" placeholder="Enter price" step="0.01" min="0"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            [class.border-red-500]="price?.invalid && isSubmitted()"
+            [class.bg-red-50]="price?.invalid && isSubmitted()" />
+          @if (price?.invalid && isSubmitted()) {
+          <div class="mt-2 space-y-1">
+            @if (price?.errors?.['required']) {
+            <p class="text-sm text-red-600">
+              Price is required
+            </p>
+            }
+            @if (price?.errors?.['min']) {
+            <p class="text-sm text-red-600">
+              Price must be a positive number
+            </p>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Notes Textarea -->
+        <div>
+          <label for="notes" class="block text-sm font-semibold text-gray-700 mb-2">
+            Notes
+          </label>
+          <textarea id="notes" formControlName="notes" placeholder="Enter your notes (minimum 10 characters)"
+            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-none"
+            rows="5" [class.border-red-500]="notes?.invalid && isSubmitted()"
+            [class.bg-red-50]="notes?.invalid && isSubmitted()"></textarea>
+          @if (notes?.invalid && isSubmitted()) {
+          <div class="mt-2 space-y-1">
+            @if (notes?.errors?.['required']) {
+            <p class="text-sm text-red-600">
+              Notes are required
+            </p>
+            }
+            @if (notes?.errors?.['minlength']) {
+            <p class="text-sm text-red-600">
+              Notes must be at least 10 characters
+            </p>
+            }
+          </div>
+          }
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex gap-3 pt-4">
+          <button type="submit" [disabled]="isLoading()"
+            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            {{ isLoading() ? 'Saving...' : 'Submit' }}
+          </button>
+          <button type="button" (click)="onReset()" [disabled]="isLoading()"
+            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            Reset
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
