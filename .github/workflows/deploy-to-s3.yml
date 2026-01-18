@@ -39,8 +39,8 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          # Sync all files from Angular build output
-          aws s3 sync dist/personal-info-updates/ s3://${{ secrets.S3_BUCKET_NAME }}/ \
+          # Sync all files from Angular build output (browser subdirectory)
+          aws s3 sync dist/personal-info-updates/browser/ s3://${{ secrets.S3_BUCKET_NAME }}/ \
             --delete \
             --cache-control "public, max-age=3600"
 
