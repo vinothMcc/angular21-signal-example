@@ -50,7 +50,8 @@ jobs:
             --include "*.html" \
             --recursive \
             --cache-control "no-cache, no-store, must-revalidate" \
-            --metadata-directive REPLACE
+            --metadata-directive REPLACE \
+            --content-type "text/html"
 
       - name: Configure S3 static website hosting
         run: |
