@@ -184,6 +184,27 @@
 <main class="main">
   <div class="content">
     <h1>{{ title() }}</h1>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button class="pill" *ngIf="isAuth()" (click)="logout()">Logout</button>
+    </div>
+
+    <!-- Example: modern structural directive usage -->
+    <!-- *ngIf with else block, and *ngFor for looping -->
+    <section style="margin-top:1rem; width:100%;">
+      <!-- `isAuth()` decides which template to render. `else` references the ng-template below. -->
+      <ng-container *ngIf="isAuth(); else notLogged">
+        <p><strong>Your items:</strong></p>
+        <ul>
+          <!-- Loop over the `sampleItems` signal using *ngFor. `index as i` exposes the loop index. -->
+          <li *ngFor="let item of sampleItems(); index as i">{{ i + 1 }}. {{ item }}</li>
+        </ul>
+      </ng-container>
+
+      <!-- Fallback template when the user is not authenticated -->
+      <ng-template #notLogged>
+        <p>Please log in to view your items.</p>
+      </ng-template>
+    </section>
   </div>
 </main>
 

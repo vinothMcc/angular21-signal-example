@@ -2,11 +2,13 @@ import { Component, computed, effect, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
   templateUrl: './login-form.html',
 })
 export class LoginFormComponent {
@@ -17,7 +19,11 @@ export class LoginFormComponent {
   email = signal('');
   password = signal('');
   logInError = signal(false);
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService,
+  ) {
     // this.loginForm = this.fb.group({
     //   email: ['', [Validators.required, Validators.email]],
     //   password: ['', [Validators.required, Validators.minLength(6)]],
@@ -45,9 +51,24 @@ export class LoginFormComponent {
     console.log('Password length:', this.password().length);
   });
   onSubmit() {
-    setTimeout(() => {
-      this.router.navigate(['/personal-info']);
-    }, 1500);
+    this.isSubmitted.set(true);
+    if (!this.isFormValid()) {
+      return;
+    }
+
+    this.isLoading.set(true);
+    const payload = { email: this.email(), password: this.password() };
+    this.authService.login(payload).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.router.navigate(['/personal-info']);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.logInError.set(true);
+        console.error('Login failed', err);
+      },
+    });
   }
 
   onReset() {
