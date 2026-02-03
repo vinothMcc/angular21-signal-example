@@ -16,7 +16,10 @@ export class App {
   // Keep this simple — in a real app you'd fetch this from an API.
   sampleItems = signal<string[]>(['Groceries', 'Rent', 'Utilities']);
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+  ) {}
 
   // Check whether a token exists (simple local check).
   isAuth() {

@@ -34,23 +34,6 @@ expenses_col = db['daily-expenses']
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:4200"])
 
-@app.route('/expenses', methods=['GET'])
-@token_required
-def get_expenses():
-    docs = expenses_col.find().sort('created_at', -1)
-    expenses = []
-    for d in docs:
-        expenses.append({
-            'id': str(d.get('_id')),
-            'category': d.get('category'),
-            'price': float(d.get('price')) if d.get('price') is not None else None,
-            'notes': d.get('notes'),
-            'date': d.get('date').isoformat() if d.get('date') else None,
-            'created_at': d.get('created_at').isoformat() if d.get('created_at') else None,
-        })
-    return jsonify(expenses), 200
-
-
 # Decorator to protect endpoints that require authentication.
 # Expects header: Authorization: Bearer <token>
 # Verifies the token signature and expiry using JWT_SECRET. On success it sets `g.current_user_id`.
@@ -73,6 +56,22 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
+@app.route('/expenses', methods=['GET'])
+@token_required
+def get_expenses():
+    docs = expenses_col.find().sort('created_at', -1)
+    expenses = []
+    for d in docs:
+        expenses.append({
+            'id': str(d.get('_id')),
+            'category': d.get('category'),
+            'price': float(d.get('price')) if d.get('price') is not None else None,
+            'notes': d.get('notes'),
+            'date': d.get('date').isoformat() if d.get('date') else None,
+            'created_at': d.get('created_at').isoformat() if d.get('created_at') else None,
+        })
+    return jsonify(expenses), 200
+
 
 @app.route('/login', methods=['POST'])
 # Login endpoint: verifies credentials and returns a signed JWT access token.
@@ -83,12 +82,13 @@ def login():
     data = request.get_json() or {}
     email = data.get('email')
     password = data.get('password')
-
+    print("user:", data)
     if not email or not password:
         return jsonify({'error': 'email and password are required'}), 400
 
     # Lookup user and verify password (stored as a hash).
     user = users_col.find_one({'email': email})
+    print("user:", user)
     if not user or not check_password_hash(user.get('password', ''), password):
         # Return a generic message to avoid revealing which field was incorrect.
         return jsonify({'error': 'Invalid credentials'}), 401
@@ -98,7 +98,9 @@ def login():
         'user_id': str(user.get('_id')),
         'email': user.get('email'),
         'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1),
-    }
+    } 
+    
+    print("Login attempt for email:", payload)
     # Sign the token (PyJWT returns a compact JWT string).
     token = jwt.encode(payload, JWT_SECRET, algorithm='HS256')
 
@@ -181,6 +183,12 @@ def create_user():
     if not email or not password:
         return jsonify({'error': 'email and password are required'}), 400
 
+    # Prevent duplicate registrations for the same email address
+    existing = users_col.find_one({'email': email})
+    if existing:
+        return jsonify({'error': 'User already exists'}), 409
+
+    # Store the password as a secure hash
     hashed = generate_password_hash(password)
     doc = {
         'email': email,

@@ -75,4 +75,8 @@ export class LoginFormComponent {
     // this.loginForm.reset();
     this.isSubmitted.set(false);
   }
+  callSignup() {
+    console.log('Navigating to signup');
+    this.router.navigate(['/signup']);
+  }
 }

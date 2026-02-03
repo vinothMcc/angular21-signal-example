@@ -34,7 +34,10 @@ export class PersonalInfoComponent {
 
     // load users from backend
     this.userService.getUsers().subscribe({
-      next: (users) => this.users.set(users),
+      next: (users) => {
+        this.users.set(users);
+        console.log('Loaded users:', users);
+      },
       error: (err) => console.error('Failed to load users', err),
     });
 

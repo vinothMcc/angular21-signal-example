@@ -12,7 +12,12 @@ export class ExpenseService {
     return this.http.get<any[]>(`${BASE}/expenses`);
   }
 
-  createExpense(payload: { category: string; date: string; price: number; notes?: string }): Observable<any> {
+  createExpense(payload: {
+    category: string;
+    date: string;
+    price: number;
+    notes?: string;
+  }): Observable<any> {
     return this.http.post(`${BASE}/expenses`, payload);
   }
 }

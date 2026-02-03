@@ -19,7 +19,7 @@ export class AuthService {
         if (res?.access_token) {
           localStorage.setItem('token', res.access_token);
         }
-      })
+      }),
     );
   }
 

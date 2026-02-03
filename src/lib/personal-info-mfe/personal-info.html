@@ -29,7 +29,8 @@
         <h2 class="text-xl font-semibold mb-2">Recent Expenses</h2>
         <ul *ngIf="expenses().length > 0" class="list-disc ml-6">
           <li *ngFor="let e of expenses()">
-            {{ e.category }} - {{ e.price }} <span class="text-sm text-gray-500">({{ e.date }})</span>
+            {{ e.category }} - {{ e.price }}
+            <span class="text-sm text-gray-500">({{ e.date }})</span>
             <div class="text-sm text-gray-600">{{ e.notes }}</div>
           </li>
         </ul>
